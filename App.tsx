@@ -45,17 +45,18 @@ const App: React.FC = () => {
     setCurrentUser(null);
   };
 
-  const handleAddEmployee = async (employeeData: Pick<TeamMember, "name">) => {
+  const handleAddEmployee = async (
+    employeeData: Pick<TeamMember, "name" | "avatar">
+  ) => {
     setLoading(true);
     try {
       const newId = await addEmployee(employeeData);
-      const newEmployee: TeamMember = {
-        id: newId,
-        name: employeeData.name,
-        status: TeamMemberStatus.Out,
-        lastSeen: "Newly Added",
-      };
-      setTeamMembers((prev) => [...prev, newEmployee]);
+      // Fetch the new employee from Firestore to get the avatar URL
+      const members = await getEmployees();
+      const newEmployee = members.find((m) => m.id === newId);
+      if (newEmployee) {
+        setTeamMembers((prev) => [...prev, newEmployee]);
+      }
     } catch (error) {
       console.error("Error adding employee:", error);
     } finally {
@@ -67,8 +68,11 @@ const App: React.FC = () => {
     setLoading(true);
     try {
       await updateEmployee(updatedEmployee);
+      // Fetch the updated employee from Firestore to get the avatar URL
+      const members = await getEmployees();
+      const updated = members.find((m) => m.id === updatedEmployee.id);
       setTeamMembers((prev) =>
-        prev.map((m) => (m.id === updatedEmployee.id ? updatedEmployee : m))
+        prev.map((m) => (m.id === updatedEmployee.id && updated ? updated : m))
       );
     } catch (error) {
       console.error("Error updating employee:", error);

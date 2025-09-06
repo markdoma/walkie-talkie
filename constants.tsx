@@ -53,10 +53,15 @@ export const getEmployees = async (): Promise<TeamMember[]> => {
 };
 
 export const addEmployee = async (
-  employeeData: Pick<TeamMember, "name">
+  employeeData: Pick<TeamMember, "name" | "avatar">
 ): Promise<string> => {
+  let avatarUrl = employeeData.avatar;
+  if (avatarUrl?.startsWith("data:image")) {
+    avatarUrl = await uploadSelfie(avatarUrl);
+  }
   const docRef = await addDoc(collection(db, "employees"), {
     ...employeeData,
+    avatar: avatarUrl || null,
     status: TeamMemberStatus.Out,
     lastSeen: "Newly Added",
   });
@@ -65,8 +70,12 @@ export const addEmployee = async (
 
 export const updateEmployee = async (employee: TeamMember): Promise<void> => {
   const { id, ...data } = employee;
+  let avatarUrl = data.avatar;
+  if (avatarUrl?.startsWith("data:image")) {
+    avatarUrl = await uploadSelfie(avatarUrl);
+  }
   const employeeRef = doc(db, "employees", id);
-  await updateDoc(employeeRef, { ...data });
+  await updateDoc(employeeRef, { ...data, avatar: avatarUrl || null });
 };
 
 export const deleteEmployee = async (employeeId: string): Promise<void> => {
