@@ -1,0 +1,7 @@
+{
+  "name": "Wakie Talkie - Time Tracking SaaS",
+  "description": "A modern, secure, and scalable Time In / Time Out Tracking SaaS platform. This application provides a clean dashboard for employees to clock in/out, track their hours, and view team status. It also includes sections for detailed timesheets and analytical reports.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
