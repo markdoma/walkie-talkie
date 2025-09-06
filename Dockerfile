@@ -22,8 +22,11 @@ FROM nginx:alpine
 # Copy built files from builder
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Expose port 80
-EXPOSE 80
+# Copy nginx config template for Cloud Run $PORT support
+COPY nginx.conf /etc/nginx/templates/default.conf.template
+
+# Expose port 8080 for Cloud Run
+EXPOSE 8080
 
 # Start Nginx server
 CMD ["nginx", "-g", "daemon off;"]
